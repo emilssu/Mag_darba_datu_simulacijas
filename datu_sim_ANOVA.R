@@ -1,50 +1,6 @@
 source('funkcijas.R')
 library(rstatix)
 library(tidyverse)
-F.cn <- function(x){
-  0.8 * pnorm(x)+
-    0.2 * pnorm(x, 0, 25)
-}
-F.cn2 <- function(x){
-  0.1 * pnorm(x + 10) + 
-    0.8 * pnorm(x) + 
-    0.1 * pnorm(x - 10)
-}
-F.cnu <- function(x){
-  0.9 * pnorm(x)+
-    0.1 * punif(x, -5, 10)
-}
-F.cnu2 <- function(x){
-  0.8 * pnorm(x)+
-    0.1 * punif(x, 3, 10)+
-    0.1 * punif(x, -10, -3)
-}
-F.cnu3 <- function(x){
-  0.8 * pnorm(x)+
-    0.1 * punif(x, 2, 15)+
-    0.1 * punif(x, -15, -2)
-}
-
-gen.N <- function(){
-  y <- runif(1)
-  return(uniroot(function(x) {F.cn(x) - y}, c(-1000,1000))$root)
-}
-gen.N2 <- function(){
-  y <- runif(1)
-  return(uniroot(function(x) {F.cn2(x) - y}, c(-1000,1000))$root)
-}
-gen.NU <- function(){
-  y <- runif(1)
-  return(uniroot(function(x) {F.cnu(x) - y}, c(-1000,1000))$root)
-}
-gen.NU2 <- function(){
-  y <- runif(1)
-  return(uniroot(function(x) {F.cnu2(x) - y}, c(-1000,1000))$root)
-}
-gen.NU3 <- function(){
-  y <- runif(1)
-  return(uniroot(function(x) {F.cnu3(x) - y}, c(-1000,1000))$root)
-}
 
 F.cn3 <- function(x){
   0.2 * pnorm(x + 10) + 
@@ -57,22 +13,6 @@ gen.N3 <- function(){
 }
 
 
-# equal variance
-# 1. N (0,1)
-# 2. LN (0,5)
-# 3. Chi df = 3
-# 4. N
-# 5. N2
-# 6. NU
-
-# Metodes: aov, welch_anova, t1way, EL,anova.tm, EL.anova.stm
-
-# ww <- list(rnorm(100), rnorm(100), rnorm(100))
-# df <- data.frame(data = c(ww[[1]], ww[[2]], ww[[3]]), gr = c(rep(1,100), rep(2,100), rep(3,100)))
-# t1way(data ~ gr, data = df, nboot = 1)$p.value
-# 
-# welch_anova_test(df)$p
-# summary(aov(data ~ gr, data = df))[[1]]$`Pr(>F)`[1]
 alpha <- c(0.05, 0.1, 0.15, 0.2)
 gamma <- c(0.1, 0.2, 0.3, 0.4)
 NN <- c(30, 50, 100, 200, 500)
@@ -82,137 +22,137 @@ alph_gam <- as.data.frame(cbind(c(rep(alpha[1],4),rep(alpha[2],3), rep(alpha[3],
 names(alph_gam) <- c('alpha', 'gamma')  
 
 iter <- 10000
-# p.aov.norm <- matrix(ncol = 2, nrow = length(NN))
-# p.aov.lnorm <- matrix(ncol = 2, nrow = length(NN))
-# p.aov.chi <- matrix(ncol = 2, nrow = length(NN))
-# p.aov.N <- matrix(ncol = 2, nrow = length(NN))
-# p.aov.N2 <- matrix(ncol = 2, nrow = length(NN))
-# p.aov.NU <- matrix(ncol = 2, nrow = length(NN))
+p.aov.norm <- matrix(ncol = 2, nrow = length(NN))
+p.aov.lnorm <- matrix(ncol = 2, nrow = length(NN))
+p.aov.chi <- matrix(ncol = 2, nrow = length(NN))
+p.aov.N <- matrix(ncol = 2, nrow = length(NN))
+p.aov.N2 <- matrix(ncol = 2, nrow = length(NN))
+p.aov.NU <- matrix(ncol = 2, nrow = length(NN))
 p.aov.N3 <- matrix(ncol = 2, nrow = length(NN))
 
-# p.y.norm.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.y.lnorm.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.y.chi.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.y.N.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.y.N2.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.y.NU.tm <- matrix(ncol = 4, nrow = length(NN))
+p.y.norm.tm <- matrix(ncol = 4, nrow = length(NN))
+p.y.lnorm.tm <- matrix(ncol = 4, nrow = length(NN))
+p.y.chi.tm <- matrix(ncol = 4, nrow = length(NN))
+p.y.N.tm <- matrix(ncol = 4, nrow = length(NN))
+p.y.N2.tm <- matrix(ncol = 4, nrow = length(NN))
+p.y.NU.tm <- matrix(ncol = 4, nrow = length(NN))
 p.y.N3.tm <- matrix(ncol = 4, nrow = length(NN))
 
-# p.el.norm.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.el.lnorm.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.el.chi.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.el.N.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.el.N2.tm <- matrix(ncol = 4, nrow = length(NN))
-# p.el.NU.tm <- matrix(ncol = 4, nrow = length(NN))
+p.el.norm.tm <- matrix(ncol = 4, nrow = length(NN))
+p.el.lnorm.tm <- matrix(ncol = 4, nrow = length(NN))
+p.el.chi.tm <- matrix(ncol = 4, nrow = length(NN))
+p.el.N.tm <- matrix(ncol = 4, nrow = length(NN))
+p.el.N2.tm <- matrix(ncol = 4, nrow = length(NN))
+p.el.NU.tm <- matrix(ncol = 4, nrow = length(NN))
 p.el.N3.tm <- matrix(ncol = 4, nrow = length(NN))
 
-# p.el.norm.stm <- matrix(ncol = 12, nrow = length(NN))
-# p.el.lnorm.stm <- matrix(ncol = 12, nrow = length(NN))
-# p.el.chi.stm <- matrix(ncol = 12, nrow = length(NN))
-# p.el.N.stm <- matrix(ncol = 12, nrow = length(NN))
-# p.el.N2.stm <- matrix(ncol = 12, nrow = length(NN))
-# p.el.NU.stm <- matrix(ncol = 12, nrow = length(NN))
+p.el.norm.stm <- matrix(ncol = 12, nrow = length(NN))
+p.el.lnorm.stm <- matrix(ncol = 12, nrow = length(NN))
+p.el.chi.stm <- matrix(ncol = 12, nrow = length(NN))
+p.el.N.stm <- matrix(ncol = 12, nrow = length(NN))
+p.el.N2.stm <- matrix(ncol = 12, nrow = length(NN))
+p.el.NU.stm <- matrix(ncol = 12, nrow = length(NN))
 p.el.N3.stm <- matrix(ncol = 12, nrow = length(NN))
 # n <- 1
 
 set.seed(1)
 for(n in 1:length(NN)){
-  # temp.aov.norm <- matrix(ncol = 2, nrow = iter)
-  # temp.aov.lnorm <- matrix(ncol = 2, nrow = iter)
-  # temp.aov.chi <- matrix(ncol = 2, nrow = iter)
-  # temp.aov.N <- matrix(ncol = 2, nrow = iter)
-  # temp.aov.N2 <- matrix(ncol = 2, nrow = iter)
-  # temp.aov.NU <- matrix(ncol = 2, nrow = iter)
+  temp.aov.norm <- matrix(ncol = 2, nrow = iter)
+  temp.aov.lnorm <- matrix(ncol = 2, nrow = iter)
+  temp.aov.chi <- matrix(ncol = 2, nrow = iter)
+  temp.aov.N <- matrix(ncol = 2, nrow = iter)
+  temp.aov.N2 <- matrix(ncol = 2, nrow = iter)
+  temp.aov.NU <- matrix(ncol = 2, nrow = iter)
   temp.aov.N3 <- matrix(ncol = 2, nrow = iter)
   
-  # temp.y.norm.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.y.lnorm.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.y.chi.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.y.N.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.y.N2.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.y.NU.tm <- matrix(ncol = 4, nrow = iter)
+  temp.y.norm.tm <- matrix(ncol = 4, nrow = iter)
+  temp.y.lnorm.tm <- matrix(ncol = 4, nrow = iter)
+  temp.y.chi.tm <- matrix(ncol = 4, nrow = iter)
+  temp.y.N.tm <- matrix(ncol = 4, nrow = iter)
+  temp.y.N2.tm <- matrix(ncol = 4, nrow = iter)
+  temp.y.NU.tm <- matrix(ncol = 4, nrow = iter)
   temp.y.N3.tm <- matrix(ncol = 4, nrow = iter)
   
-  # temp.el.norm.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.el.lnorm.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.el.chi.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.el.N.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.el.N2.tm <- matrix(ncol = 4, nrow = iter)
-  # temp.el.NU.tm <- matrix(ncol = 4, nrow = iter)
+  temp.el.norm.tm <- matrix(ncol = 4, nrow = iter)
+  temp.el.lnorm.tm <- matrix(ncol = 4, nrow = iter)
+  temp.el.chi.tm <- matrix(ncol = 4, nrow = iter)
+  temp.el.N.tm <- matrix(ncol = 4, nrow = iter)
+  temp.el.N2.tm <- matrix(ncol = 4, nrow = iter)
+  temp.el.NU.tm <- matrix(ncol = 4, nrow = iter)
   temp.el.N3.tm <- matrix(ncol = 4, nrow = iter)
   
-  # temp.el.norm.stm <- matrix(ncol = 12, nrow = iter)
-  # temp.el.lnorm.stm <- matrix(ncol = 12, nrow = iter)
-  # temp.el.chi.stm <- matrix(ncol = 12, nrow = iter)
-  # temp.el.N.stm <- matrix(ncol = 12, nrow = iter)
-  # temp.el.N2.stm <- matrix(ncol = 12, nrow = iter)
-  # temp.el.NU.stm <- matrix(ncol = 12, nrow = iter)
+  temp.el.norm.stm <- matrix(ncol = 12, nrow = iter)
+  temp.el.lnorm.stm <- matrix(ncol = 12, nrow = iter)
+  temp.el.chi.stm <- matrix(ncol = 12, nrow = iter)
+  temp.el.N.stm <- matrix(ncol = 12, nrow = iter)
+  temp.el.N2.stm <- matrix(ncol = 12, nrow = iter)
+  temp.el.NU.stm <- matrix(ncol = 12, nrow = iter)
   temp.el.N3.stm <- matrix(ncol = 12, nrow = iter)
   
   for(i in 1:iter){
-    # ww.norm <- list(rnorm(NN[n]), rnorm(NN[n]), rnorm(NN[n]))
-    # ww.lnorm <- list(rlnorm(NN[n], sdlog = 5), rlnorm(NN[n], sdlog = 5), rlnorm(NN[n], sdlog = 5))
-    # ww.chi <- list(rchisq(NN[n], df = 3), rchisq(NN[n], df = 3), rchisq(NN[n], df = 3))
-    # ww.N <- list(replicate(NN[n], gen.N()), replicate(NN[n], gen.N()), replicate(NN[n], gen.N()))
-    # ww.N2 <- list(replicate(NN[n], gen.N2()), replicate(NN[n], gen.N2()), replicate(NN[n], gen.N2()))
-    # ww.NU <- list(replicate(NN[n], gen.NU()), replicate(NN[n], gen.NU()), replicate(NN[n], gen.NU()))
+    ww.norm <- list(rnorm(NN[n]), rnorm(NN[n]), rnorm(NN[n]))
+    ww.lnorm <- list(rlnorm(NN[n], sdlog = 5), rlnorm(NN[n], sdlog = 5), rlnorm(NN[n], sdlog = 5))
+    ww.chi <- list(rchisq(NN[n], df = 3), rchisq(NN[n], df = 3), rchisq(NN[n], df = 3))
+    ww.N <- list(replicate(NN[n], gen.N()), replicate(NN[n], gen.N()), replicate(NN[n], gen.N()))
+    ww.N2 <- list(replicate(NN[n], gen.N2()), replicate(NN[n], gen.N2()), replicate(NN[n], gen.N2()))
+    ww.NU <- list(replicate(NN[n], gen.NU()), replicate(NN[n], gen.NU()), replicate(NN[n], gen.NU()))
     ww.N3 <- list(replicate(NN[n], gen.N3()), replicate(NN[n], gen.N3()), replicate(NN[n], gen.N3()))
     
-    # dati.norm <- data.frame(data = c(ww.norm[[1]], ww.norm[[2]], ww.norm[[3]]), 
-    #                         gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
-    # dati.lnorm <- data.frame(data = c(ww.lnorm[[1]], ww.lnorm[[2]], ww.lnorm[[3]]), 
-    #                         gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
-    # dati.chi <- data.frame(data = c(ww.chi[[1]], ww.chi[[2]], ww.chi[[3]]), 
-    #                         gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
-    # dati.N <- data.frame(data = c(ww.N[[1]], ww.N[[2]], ww.N[[3]]), 
-    #                         gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
-    # dati.N2 <- data.frame(data = c(ww.N2[[1]], ww.N2[[2]], ww.N2[[3]]), 
-    #                      gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
-    # dati.NU <- data.frame(data = c(ww.NU[[1]], ww.NU[[2]], ww.NU[[3]]), 
-    #                      gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
+    dati.norm <- data.frame(data = c(ww.norm[[1]], ww.norm[[2]], ww.norm[[3]]),
+                            gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
+    dati.lnorm <- data.frame(data = c(ww.lnorm[[1]], ww.lnorm[[2]], ww.lnorm[[3]]),
+                            gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
+    dati.chi <- data.frame(data = c(ww.chi[[1]], ww.chi[[2]], ww.chi[[3]]),
+                            gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
+    dati.N <- data.frame(data = c(ww.N[[1]], ww.N[[2]], ww.N[[3]]),
+                            gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
+    dati.N2 <- data.frame(data = c(ww.N2[[1]], ww.N2[[2]], ww.N2[[3]]),
+                         gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
+    dati.NU <- data.frame(data = c(ww.NU[[1]], ww.NU[[2]], ww.NU[[3]]),
+                         gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
     dati.N3 <- data.frame(data = c(ww.N3[[1]], ww.N3[[2]], ww.N3[[3]]), 
                           gr = c(rep(1, NN[n]), rep(2,NN[n]), rep(3,NN[n])))
     
-    # temp.aov.norm[i,1] <- summary(aov(data ~ gr, data = dati.norm))[[1]]$`Pr(>F)`[1]
-    # temp.aov.lnorm[i,1] <- summary(aov(data ~ gr, data = dati.lnorm))[[1]]$`Pr(>F)`[1]
-    # temp.aov.chi[i,1] <- summary(aov(data ~ gr, data = dati.chi))[[1]]$`Pr(>F)`[1]
-    # temp.aov.N[i,1] <- summary(aov(data ~ gr, data = dati.N))[[1]]$`Pr(>F)`[1]
-    # temp.aov.N2[i,1] <- summary(aov(data ~ gr, data = dati.N2))[[1]]$`Pr(>F)`[1]
-    # temp.aov.NU[i,1] <- summary(aov(data ~ gr, data = dati.NU))[[1]]$`Pr(>F)`[1]
+    temp.aov.norm[i,1] <- summary(aov(data ~ gr, data = dati.norm))[[1]]$`Pr(>F)`[1]
+    temp.aov.lnorm[i,1] <- summary(aov(data ~ gr, data = dati.lnorm))[[1]]$`Pr(>F)`[1]
+    temp.aov.chi[i,1] <- summary(aov(data ~ gr, data = dati.chi))[[1]]$`Pr(>F)`[1]
+    temp.aov.N[i,1] <- summary(aov(data ~ gr, data = dati.N))[[1]]$`Pr(>F)`[1]
+    temp.aov.N2[i,1] <- summary(aov(data ~ gr, data = dati.N2))[[1]]$`Pr(>F)`[1]
+    temp.aov.NU[i,1] <- summary(aov(data ~ gr, data = dati.NU))[[1]]$`Pr(>F)`[1]
     temp.aov.N3[i,1] <- summary(aov(data ~ gr, data = dati.N3))[[1]]$`Pr(>F)`[1]
     
-    # temp.aov.norm[i,2] <- welch_anova_test(dati.norm, data ~ gr)$p
-    # temp.aov.lnorm[i,2] <- welch_anova_test(dati.lnorm, data ~ gr)$p
-    # temp.aov.chi[i,2] <- welch_anova_test(dati.chi, data ~ gr)$p
-    # temp.aov.N[i,2] <- welch_anova_test(dati.N, data ~ gr)$p
-    # temp.aov.N2[i,2] <- welch_anova_test(dati.N2, data ~ gr)$p
-    # temp.aov.NU[i,2] <- welch_anova_test(dati.NU, data ~ gr)$p
+    temp.aov.norm[i,2] <- welch_anova_test(dati.norm, data ~ gr)$p
+    temp.aov.lnorm[i,2] <- welch_anova_test(dati.lnorm, data ~ gr)$p
+    temp.aov.chi[i,2] <- welch_anova_test(dati.chi, data ~ gr)$p
+    temp.aov.N[i,2] <- welch_anova_test(dati.N, data ~ gr)$p
+    temp.aov.N2[i,2] <- welch_anova_test(dati.N2, data ~ gr)$p
+    temp.aov.NU[i,2] <- welch_anova_test(dati.NU, data ~ gr)$p
     temp.aov.N3[i,2] <- welch_anova_test(dati.N3, data ~ gr)$p
     
-    # temp.alph.N.el <- matrix(ncol = 12, nrow = 1)
-    # temp.alph.N2.el <- matrix(ncol = 12, nrow = 1)
-    # temp.alph.NU.el <- matrix(ncol = 12, nrow = 1)
-    # temp.alph.norm.el <- matrix(ncol = 12, nrow = 1)
-    # temp.alph.lnorm.el <- matrix(ncol = 12, nrow = 1)
-    # temp.alph.chi.el <- matrix(ncol = 12, nrow = 1)
+    temp.alph.N.el <- matrix(ncol = 12, nrow = 1)
+    temp.alph.N2.el <- matrix(ncol = 12, nrow = 1)
+    temp.alph.NU.el <- matrix(ncol = 12, nrow = 1)
+    temp.alph.norm.el <- matrix(ncol = 12, nrow = 1)
+    temp.alph.lnorm.el <- matrix(ncol = 12, nrow = 1)
+    temp.alph.chi.el <- matrix(ncol = 12, nrow = 1)
     temp.alph.N3.el <- matrix(ncol = 12, nrow = 1)
     
     for(a in 1:length(alpha)){
       # a <- 1
-      # temp.y.norm.tm[i,a] <- t1way(data ~ gr, data = dati.norm, nboot = 1, tr = alpha[a])$p.value
-      # temp.y.lnorm.tm[i,a] <- t1way(data ~ gr, data = dati.lnorm, nboot = 1, tr = alpha[a])$p.value
-      # temp.y.chi.tm[i,a] <- t1way(data ~ gr, data = dati.chi, nboot = 1, tr = alpha[a])$p.value
-      # temp.y.N.tm[i,a] <- t1way(data ~ gr, data = dati.N, nboot = 1, tr = alpha[a])$p.value
-      # temp.y.N2.tm[i,a] <- t1way(data ~ gr, data = dati.N2, nboot = 1, tr = alpha[a])$p.value
-      # temp.y.NU.tm[i,a] <- t1way(data ~ gr, data = dati.NU, nboot = 1, tr = alpha[a])$p.value
+      temp.y.norm.tm[i,a] <- t1way(data ~ gr, data = dati.norm, nboot = 1, tr = alpha[a])$p.value
+      temp.y.lnorm.tm[i,a] <- t1way(data ~ gr, data = dati.lnorm, nboot = 1, tr = alpha[a])$p.value
+      temp.y.chi.tm[i,a] <- t1way(data ~ gr, data = dati.chi, nboot = 1, tr = alpha[a])$p.value
+      temp.y.N.tm[i,a] <- t1way(data ~ gr, data = dati.N, nboot = 1, tr = alpha[a])$p.value
+      temp.y.N2.tm[i,a] <- t1way(data ~ gr, data = dati.N2, nboot = 1, tr = alpha[a])$p.value
+      temp.y.NU.tm[i,a] <- t1way(data ~ gr, data = dati.NU, nboot = 1, tr = alpha[a])$p.value
       temp.y.N3.tm[i,a] <- t1way(data ~ gr, data = dati.N3, nboot = 1, tr = alpha[a])$p.value
       
-      # temp.el.norm.tm[i,a] <- EL.anova.tm(ww.norm, alpha[a], alpha[a])$p.value
-      # temp.el.lnorm.tm[i,a] <- EL.anova.tm(ww.lnorm, alpha[a], alpha[a])$p.value
-      # temp.el.chi.tm[i,a] <- EL.anova.tm(ww.chi, alpha[a], alpha[a])$p.value
-      # temp.el.N.tm[i,a] <- EL.anova.tm(ww.N, alpha[a], alpha[a])$p.value
-      # temp.el.N2.tm[i,a] <- EL.anova.tm(ww.N2, alpha[a], alpha[a])$p.value
-      # temp.el.NU.tm[i,a] <- EL.anova.tm(ww.NU, alpha[a], alpha[a])$p.value
+      temp.el.norm.tm[i,a] <- EL.anova.tm(ww.norm, alpha[a], alpha[a])$p.value
+      temp.el.lnorm.tm[i,a] <- EL.anova.tm(ww.lnorm, alpha[a], alpha[a])$p.value
+      temp.el.chi.tm[i,a] <- EL.anova.tm(ww.chi, alpha[a], alpha[a])$p.value
+      temp.el.N.tm[i,a] <- EL.anova.tm(ww.N, alpha[a], alpha[a])$p.value
+      temp.el.N2.tm[i,a] <- EL.anova.tm(ww.N2, alpha[a], alpha[a])$p.value
+      temp.el.NU.tm[i,a] <- EL.anova.tm(ww.NU, alpha[a], alpha[a])$p.value
       temp.el.N3.tm[i,a] <- EL.anova.tm(ww.N3, alpha[a], alpha[a])$p.value
       
       
@@ -228,85 +168,85 @@ for(n in 1:length(NN)){
         indx <- 11
       }
       
-      # temp.gam.N.el <- matrix(ncol = length(gam), nrow = 1)
-      # temp.gam.N2.el <- matrix(ncol = length(gam), nrow = 1)
-      # temp.gam.NU.el <- matrix(ncol = length(gam), nrow = 1)
-      # temp.gam.norm.el <- matrix(ncol = length(gam), nrow = 1)
-      # temp.gam.lnorm.el <- matrix(ncol = length(gam), nrow = 1)
-      # temp.gam.chi.el <- matrix(ncol = length(gam), nrow = 1)
+      temp.gam.N.el <- matrix(ncol = length(gam), nrow = 1)
+      temp.gam.N2.el <- matrix(ncol = length(gam), nrow = 1)
+      temp.gam.NU.el <- matrix(ncol = length(gam), nrow = 1)
+      temp.gam.norm.el <- matrix(ncol = length(gam), nrow = 1)
+      temp.gam.lnorm.el <- matrix(ncol = length(gam), nrow = 1)
+      temp.gam.chi.el <- matrix(ncol = length(gam), nrow = 1)
       temp.gam.N3.el <- matrix(ncol = length(gam), nrow = 1)
       
       for(g in 1:length(gam)){
-        # temp.gam.norm.el[1,g] <- EL.anova.stm(ww.norm, alpha[a], gam[g])$p.value
-        # temp.gam.lnorm.el[1,g] <- EL.anova.stm(ww.lnorm, alpha[a], gam[g])$p.value
-        # temp.gam.chi.el[1,g] <- EL.anova.stm(ww.chi, alpha[a], gam[g])$p.value
-        # temp.gam.N.el[1,g] <- EL.anova.stm(ww.N, alpha[a], gam[g])$p.value
-        # temp.gam.N2.el[1,g] <- EL.anova.stm(ww.N2, alpha[a], gam[g])$p.value
-        # temp.gam.NU.el[1,g] <- EL.anova.stm(ww.NU, alpha[a], gam[g])$p.value
+        temp.gam.norm.el[1,g] <- EL.anova.stm(ww.norm, alpha[a], gam[g])$p.value
+        temp.gam.lnorm.el[1,g] <- EL.anova.stm(ww.lnorm, alpha[a], gam[g])$p.value
+        temp.gam.chi.el[1,g] <- EL.anova.stm(ww.chi, alpha[a], gam[g])$p.value
+        temp.gam.N.el[1,g] <- EL.anova.stm(ww.N, alpha[a], gam[g])$p.value
+        temp.gam.N2.el[1,g] <- EL.anova.stm(ww.N2, alpha[a], gam[g])$p.value
+        temp.gam.NU.el[1,g] <- EL.anova.stm(ww.NU, alpha[a], gam[g])$p.value
         temp.gam.N3.el[1,g] <- EL.anova.stm(ww.N3, alpha[a], gam[g])$p.value
         
       }
       
-      # temp.alph.N.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.N.el
-      # temp.alph.N2.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.N2.el
-      # temp.alph.NU.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.NU.el
-      # temp.alph.norm.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.norm.el
-      # temp.alph.lnorm.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.lnorm.el
-      # temp.alph.chi.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.chi.el
+      temp.alph.N.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.N.el
+      temp.alph.N2.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.N2.el
+      temp.alph.NU.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.NU.el
+      temp.alph.norm.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.norm.el
+      temp.alph.lnorm.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.lnorm.el
+      temp.alph.chi.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.chi.el
       temp.alph.N3.el[1,indx:(length(gam)+indx - 1)] <- temp.gam.N3.el
     
       # print(temp.alph.N.el)
       # print(indx:(length(gam)+indx - 1))
     }
     
-    # temp.el.N.stm[i,] <- temp.alph.N.el
-    # temp.el.N2.stm[i,] <- temp.alph.N2.el
-    # temp.el.NU.stm[i,] <- temp.alph.NU.el
-    # temp.el.norm.stm[i,] <- temp.alph.norm.el
-    # temp.el.lnorm.stm[i,] <- temp.alph.lnorm.el
-    # temp.el.chi.stm[i,] <- temp.alph.chi.el
+    temp.el.N.stm[i,] <- temp.alph.N.el
+    temp.el.N2.stm[i,] <- temp.alph.N2.el
+    temp.el.NU.stm[i,] <- temp.alph.NU.el
+    temp.el.norm.stm[i,] <- temp.alph.norm.el
+    temp.el.lnorm.stm[i,] <- temp.alph.lnorm.el
+    temp.el.chi.stm[i,] <- temp.alph.chi.el
     temp.el.N3.stm[i,] <- temp.alph.N3.el
     
     print(paste('i: ', i, '; ', 'n: ', n, sep = ''))
   }
-  # p.aov.norm[n,1] <- mean(temp.aov.norm[,1] < 0.05)
-  # p.aov.lnorm[n,1] <- mean(temp.aov.lnorm[,1] < 0.05)
-  # p.aov.chi[n,1] <- mean(temp.aov.chi[,1] < 0.05)
-  # p.aov.N[n,1] <- mean(temp.aov.N[,1] < 0.05)
-  # p.aov.N2[n,1] <- mean(temp.aov.N2[,1] < 0.05)
-  # p.aov.NU[n,1] <- mean(temp.aov.NU[,1] < 0.05)
+  p.aov.norm[n,1] <- mean(temp.aov.norm[,1] < 0.05)
+  p.aov.lnorm[n,1] <- mean(temp.aov.lnorm[,1] < 0.05)
+  p.aov.chi[n,1] <- mean(temp.aov.chi[,1] < 0.05)
+  p.aov.N[n,1] <- mean(temp.aov.N[,1] < 0.05)
+  p.aov.N2[n,1] <- mean(temp.aov.N2[,1] < 0.05)
+  p.aov.NU[n,1] <- mean(temp.aov.NU[,1] < 0.05)
   p.aov.N3[n,1] <- mean(temp.aov.N3[,1] < 0.05)
   
-  # p.aov.norm[n,2] <- mean(temp.aov.norm[,2] < 0.05)
-  # p.aov.lnorm[n,2] <- mean(temp.aov.lnorm[,2] < 0.05)
-  # p.aov.chi[n,2] <- mean(temp.aov.chi[,2] < 0.05)
-  # p.aov.N[n,2] <- mean(temp.aov.N[,2] < 0.05)
-  # p.aov.N2[n,2] <- mean(temp.aov.N2[,2] < 0.05)
-  # p.aov.NU[n,2] <- mean(temp.aov.NU[,2] < 0.05)
+  p.aov.norm[n,2] <- mean(temp.aov.norm[,2] < 0.05)
+  p.aov.lnorm[n,2] <- mean(temp.aov.lnorm[,2] < 0.05)
+  p.aov.chi[n,2] <- mean(temp.aov.chi[,2] < 0.05)
+  p.aov.N[n,2] <- mean(temp.aov.N[,2] < 0.05)
+  p.aov.N2[n,2] <- mean(temp.aov.N2[,2] < 0.05)
+  p.aov.NU[n,2] <- mean(temp.aov.NU[,2] < 0.05)
   p.aov.N3[n,2] <- mean(temp.aov.N3[,2] < 0.05)
   
-  # p.el.norm.tm[n,] <- colMeans(temp.el.norm.tm < 0.05, na.rm = TRUE)
-  # p.el.lnorm.tm[n,] <- colMeans(temp.el.lnorm.tm< 0.05, na.rm = TRUE)
-  # p.el.chi.tm[n,] <- colMeans(temp.el.chi.tm< 0.05, na.rm = TRUE)
-  # p.el.N.tm[n,] <- colMeans(temp.el.N.tm< 0.05, na.rm = TRUE)
-  # p.el.N2.tm[n,] <- colMeans(temp.el.N2.tm< 0.05, na.rm = TRUE)
-  # p.el.NU.tm[n,] <- colMeans(temp.el.NU.tm< 0.05, na.rm = TRUE)
+  p.el.norm.tm[n,] <- colMeans(temp.el.norm.tm < 0.05, na.rm = TRUE)
+  p.el.lnorm.tm[n,] <- colMeans(temp.el.lnorm.tm< 0.05, na.rm = TRUE)
+  p.el.chi.tm[n,] <- colMeans(temp.el.chi.tm< 0.05, na.rm = TRUE)
+  p.el.N.tm[n,] <- colMeans(temp.el.N.tm< 0.05, na.rm = TRUE)
+  p.el.N2.tm[n,] <- colMeans(temp.el.N2.tm< 0.05, na.rm = TRUE)
+  p.el.NU.tm[n,] <- colMeans(temp.el.NU.tm< 0.05, na.rm = TRUE)
   p.el.N3.tm[n,] <- colMeans(temp.el.N3.tm< 0.05, na.rm = TRUE)
   
-  # p.y.norm.tm[n,] <- colMeans(temp.y.norm.tm < 0.05, na.rm = TRUE)
-  # p.y.lnorm.tm[n,] <- colMeans(temp.y.lnorm.tm< 0.05, na.rm = TRUE)
-  # p.y.chi.tm[n,] <- colMeans(temp.y.chi.tm< 0.05, na.rm = TRUE)
-  # p.y.N.tm[n,] <- colMeans(temp.y.N.tm< 0.05, na.rm = TRUE)
-  # p.y.N2.tm[n,] <- colMeans(temp.y.N2.tm< 0.05, na.rm = TRUE)
-  # p.y.NU.tm[n,] <- colMeans(temp.y.NU.tm< 0.05, na.rm = TRUE)
+  p.y.norm.tm[n,] <- colMeans(temp.y.norm.tm < 0.05, na.rm = TRUE)
+  p.y.lnorm.tm[n,] <- colMeans(temp.y.lnorm.tm< 0.05, na.rm = TRUE)
+  p.y.chi.tm[n,] <- colMeans(temp.y.chi.tm< 0.05, na.rm = TRUE)
+  p.y.N.tm[n,] <- colMeans(temp.y.N.tm< 0.05, na.rm = TRUE)
+  p.y.N2.tm[n,] <- colMeans(temp.y.N2.tm< 0.05, na.rm = TRUE)
+  p.y.NU.tm[n,] <- colMeans(temp.y.NU.tm< 0.05, na.rm = TRUE)
   p.y.N3.tm[n,] <- colMeans(temp.y.N3.tm< 0.05, na.rm = TRUE)
   
-  # p.el.norm.stm[n,] <- colMeans(temp.el.norm.stm < 0.05, na.rm = TRUE)
-  # p.el.lnorm.stm[n,] <- colMeans(temp.el.lnorm.stm< 0.05, na.rm = TRUE)
-  # p.el.chi.stm[n,] <- colMeans(temp.el.chi.stm< 0.05, na.rm = TRUE)
-  # p.el.N.stm[n,] <- colMeans(temp.el.N.stm< 0.05, na.rm = TRUE)
-  # p.el.N2.stm[n,] <- colMeans(temp.el.N2.stm< 0.05, na.rm = TRUE)
-  # p.el.NU.stm[n,] <- colMeans(temp.el.NU.stm< 0.05, na.rm = TRUE)
+  p.el.norm.stm[n,] <- colMeans(temp.el.norm.stm < 0.05, na.rm = TRUE)
+  p.el.lnorm.stm[n,] <- colMeans(temp.el.lnorm.stm< 0.05, na.rm = TRUE)
+  p.el.chi.stm[n,] <- colMeans(temp.el.chi.stm< 0.05, na.rm = TRUE)
+  p.el.N.stm[n,] <- colMeans(temp.el.N.stm< 0.05, na.rm = TRUE)
+  p.el.N2.stm[n,] <- colMeans(temp.el.N2.stm< 0.05, na.rm = TRUE)
+  p.el.NU.stm[n,] <- colMeans(temp.el.NU.stm< 0.05, na.rm = TRUE)
   p.el.N3.stm[n,] <- colMeans(temp.el.N3.stm< 0.05, na.rm = TRUE)
   
 }
